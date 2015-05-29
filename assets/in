@@ -32,9 +32,17 @@ if [ -n "${username}" ] && [ -n "${password}" ] && [ -n "${email}" ]; then
   docker login -u "${username}" -p "${password}" -e "${email}"
 fi
 
+registry="$(jq -r '.source.registry // ""' < $payload)"
 repository="$(jq -r '.source.repository // ""' < $payload)"
 tag="$(jq -r '.source.tag // "latest"' < $payload)"
 rootfs="$(jq -r '.params.rootfs // false' < $payload)"
+
+if [ -n $registry ]; then
+  #Remove http:// or https:// if it is prefixed
+  registry=${registry#http://}
+  registry=${registry#https://}
+  repository="$registry/$repository"
+fi
 
 echo -n "pulling ${repository}:${tag}"
 docker pull "${repository}:${tag}" | while read line; do echo -n .; done

@@ -37,12 +37,20 @@ fi
 
 docker login -u "$username" -p "$password" -e "$email"
 
+registry="$(jq -r '.source.registry // ""' < $payload)"
 repository=$(jq -r '.source.repository // ""' < $payload)
 tag=$(jq -r '.source.tag // "latest"' < $payload)
 
 if [ -z "$repository" ]; then
   echo "must specify repository"
   exit 1
+fi
+
+if [ -n $registry ]; then
+  #Remove http:// or https:// if it is prefixed
+  registry=${registry#http://}
+  registry=${registry#https://}
+  repository="$registry/$repository"
 fi
 
 build=$(jq -r '.params.build // ""' < $payload)

@@ -15,6 +15,8 @@ Tracks and builds [Docker](https://docker.io) images.
 
 * `email`: *Optional.* The email to use when authenticating.
 
+* `registry`: *Optional.* The registry url used for checking,
+  pulling, and pushing docker images. Defaults to `https://index.docker.io`.
 
 ## Behavior
 
